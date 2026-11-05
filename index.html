@@ -71,6 +71,8 @@ svg.opacity-70{opacity:.9;fill:#cbd5e1;filter:drop-shadow(0 0 10px rgba(125,211,
 @keyframes modalIn{from{transform:scale(.8);opacity:0}}
 #res-stars{text-shadow:0 0 16px #fbbf24;letter-spacing:.3em}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+.r-line{position:absolute;top:50%;transform:translateY(-50%);height:8px;width:100%;background:repeating-linear-gradient(90deg,#eab308 0 40px,transparent 40px 80px);animation:rl 1s linear infinite;animation-play-state:paused}
+@keyframes rl{to{background-position:-80px 0}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-2 md:p-6 overflow-x-hidden">
@@ -180,6 +182,53 @@ svg.opacity-70{opacity:.9;fill:#cbd5e1;filter:drop-shadow(0 0 10px rgba(125,211,
   <div class="flex justify-between items-center mb-3"><h2 class="golden-text font-bold text-2xl" style="font-family:Orbitron,sans-serif">🏆 LEADERBOARD</h2><button onclick="LB.close()" class="text-slate-300 hover:text-white px-2">✕</button></div>
   <div id="lb-tabs" class="flex gap-1.5 flex-wrap mb-3"></div>
   <div id="lb-rows" class="space-y-1.5 max-h-80 overflow-y-auto"></div>
+ </div>
+</div>
+<!-- RACE GAME -->
+<div id="race" class="fixed inset-0 z-[70] hidden flex flex-col bg-slate-950 overflow-y-auto">
+ <header class="px-6 py-3 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
+  <button onclick="Race.back()" class="btn2 px-3 py-1.5 text-xs font-semibold">← Games</button>
+  <h2 class="golden-text font-bold" style="font-family:Orbitron,sans-serif">🏎 NITRO TYPE RACER</h2>
+  <div class="flex gap-2"><button id="r-btn" onclick="Race.toggle()" class="btn px-5 py-1.5 text-xs">START</button><button onclick="Race.reset()" class="btn2 px-4 py-1.5 text-xs">↻ RESET</button></div>
+ </header>
+ <main class="flex-1 max-w-5xl w-full mx-auto p-5 flex flex-col gap-4">
+  <div class="grid grid-cols-5 gap-3 text-center" style="font-family:Orbitron,sans-serif">
+   <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-3"><span class="block text-[10px] text-slate-400">TIME LEFT</span><span id="r-time" class="text-2xl font-extrabold text-amber-400">05:00</span></div>
+   <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-3"><span class="block text-[10px] text-slate-400">SPEED KM/H</span><span id="r-spd" class="text-2xl font-extrabold text-blue-400">0</span></div>
+   <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-3"><span class="block text-[10px] text-slate-400">WPM</span><span id="r-wpm" class="text-2xl font-extrabold text-emerald-400">0</span></div>
+   <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-3"><span class="block text-[10px] text-slate-400">ACCURACY</span><span id="r-acc" class="text-2xl font-extrabold text-purple-400">100%</span></div>
+   <div class="bg-slate-900/70 border border-slate-700 rounded-xl p-3"><span class="block text-[10px] text-slate-400">POINTS</span><span id="r-pts" class="text-2xl font-extrabold text-pink-400">0</span></div>
+  </div>
+  <div class="rounded-2xl border-y-4 border-blue-500 bg-gradient-to-b from-gray-900 to-gray-800 p-4 relative overflow-hidden">
+   <div id="r-lines" class="absolute inset-0 opacity-0 transition-opacity pointer-events-none" style="background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 20px,transparent 20px 100px)"></div>
+   <div class="relative h-44 rounded-xl overflow-hidden border-y-4 border-dashed border-gray-600 bg-[#111b21]">
+    <div id="r-line" class="r-line"></div>
+    <div id="r-car" class="absolute flex items-center" style="left:10%;top:calc(50% - 24px);transition:left .3s ease-out">
+     <div id="r-fire" class="hidden absolute -left-7 top-1/2 -translate-y-1/2 w-8 h-3.5 rounded-l-full animate-pulse" style="background:linear-gradient(90deg,transparent,#ef4444,#f97316,#fef08a);filter:blur(2px)"></div>
+     <svg class="w-24 h-12 drop-shadow-xl" viewBox="0 0 120 50" fill="none"><defs><linearGradient id="rcg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs><path d="M10 32 C10 24,25 12,45 10 L75 10 C90 10,105 20,115 28 C118 30,120 34,118 38 L112 40 C108 42,10 42,10 32 Z" fill="url(#rcg)"/><path d="M35 15 C45 11,70 11,78 15 C85 18,92 24,95 27 L30 27 Z" fill="#1e293b"/><path d="M42 16 L60 16 L60 25 L34 25 Z M64 16 L76 16 L88 25 L64 25 Z" fill="#38bdf8" opacity=".7"/><path d="M112 30 Q116 30 117 33 L110 34 Z" fill="#fef08a"/><circle cx="30" cy="38" r="10" fill="#0f172a" stroke="#64748b" stroke-width="3"/><circle cx="90" cy="38" r="10" fill="#0f172a" stroke="#64748b" stroke-width="3"/></svg>
+    </div>
+   </div>
+  </div>
+  <div class="bg-slate-900/70 border border-slate-700 rounded-2xl p-6 text-center">
+   <p id="r-hint" class="text-xs text-blue-400 font-bold uppercase tracking-widest mb-3">Press START, then type the first letter to start the clock</p>
+   <div id="r-word" class="text-5xl font-black tracking-wider mb-4 flex justify-center flex-wrap min-h-[60px]" style="font-family:Orbitron,sans-serif"></div>
+   <input id="r-in" type="text" autocomplete="off" spellcheck="false" disabled placeholder="Type here..." class="w-full max-w-sm bg-slate-950 border-2 border-blue-500/50 focus:border-blue-400 text-white text-center text-xl py-2 px-4 rounded-xl outline-none" style="user-select:text">
+   <div id="r-queue" class="flex justify-center gap-3 text-sm text-slate-500 mt-3 h-6 overflow-hidden"></div>
+  </div>
+  <div id="r-kb" class="flex flex-col gap-1.5 items-center pb-4"></div>
+ </main>
+ <div id="r-modal" class="hidden absolute inset-0 z-30 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="tm-window rounded-2xl max-w-md w-full p-8 text-center space-y-5">
+   <div class="text-5xl">🏆</div>
+   <h2 class="golden-text font-bold text-2xl" style="font-family:Orbitron,sans-serif">RACE FINISHED!</h2>
+   <div class="grid grid-cols-2 gap-3" style="font-family:Orbitron,sans-serif">
+    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800"><span class="block text-[10px] text-slate-400">POINTS</span><span id="rm-pts" class="text-xl font-bold text-pink-400"></span></div>
+    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800"><span class="block text-[10px] text-slate-400">TOP SPEED</span><span id="rm-top" class="text-xl font-bold text-blue-400"></span></div>
+    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800"><span class="block text-[10px] text-slate-400">AVG WPM</span><span id="rm-wpm" class="text-xl font-bold text-emerald-400"></span></div>
+    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800"><span class="block text-[10px] text-slate-400">ACCURACY</span><span id="rm-acc" class="text-xl font-bold text-purple-400"></span></div>
+   </div>
+   <div class="flex gap-2"><button onclick="LB.open()" class="btn2 flex-1 py-3 text-sm">🏆 Leaderboard</button><button onclick="Race.again()" class="btn flex-1 py-3 text-sm">PLAY AGAIN</button></div>
+  </div>
  </div>
 </div>
 <!-- GAMES HUB -->
@@ -393,40 +442,42 @@ const U=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 const M={words:{t:'BASIC WORDS',i:'☄️',d:'Type falling words before they hit the ground! 4 misses = Game Over.',ph:'Type the lowest word...'},
  upper:{t:'A-Z SPEED RUN',i:'🔠',d:'Type capital letters A through Z in sequence as fast as possible!',ph:'TYPE UPPERCASE A-Z...'},
  lower:{t:'a-z SPEED RUN',i:'🔡',d:'Type small letters a through z in sequence as fast as possible!',ph:'type lowercase a-z...'},
- nums:{t:'0-9 SCRAMBLE RUN',i:'🔢',d:'Type random scrambled 4-digit number codes as fast as possible!',ph:'Type number scramble...'}};
-let mode='words',play=false,paused=false,score=0,miss=[],fall=[],ri=0,seq=[],t0=0,tk=null,sp=null,raf=0,B={};
+ nums:{t:'0-9 SCRAMBLE RUN',i:'🔢',d:'Type random scrambled 4-digit number codes as fast as possible!',ph:'Type number scramble...'},race:{t:'NITRO TYPE RACER',i:'🏎',d:'5-minute word race! Type fast to build speed, points and WPM.',ph:''}};
+let mode='words',play=false,paused=false,score=0,miss=[],fall=[],ri=0,seq=[],t0=0,tk=null,sp=null,raf=0,go=false,pa=0,B={};
 const cv=q('g-cv'),cx=cv.getContext('2d'),inp=q('g-in');
 
 const sv=()=>save();
 const vis=i=>!q(i).classList.contains('hidden');
 const best=k=>B[k]==null?'—':B[k]+' pts';
 function hub(on=true){const h=q('hub');if(!on){h.classList.add('hidden');focusInput();return}
- $('typing-input').blur();
+ $('typing-input').blur();clearInterval(timer);started=false;
  q('hub-grid').innerHTML=Object.entries(M).map(([k,c])=>`<button onclick="Arc.open('${k}')" class="btn2 text-left p-5 rounded-2xl hover:ring-2 hover:ring-cyan-400 transition"><div class="text-4xl mb-2">${c.i}</div><div class="font-bold text-white mb-1" style="font-family:Orbitron,sans-serif">${c.t}</div><div class="text-xs text-slate-300 mb-3">${c.d}</div><div class="text-xs text-amber-300 font-bold">🏆 Best: ${best(k)}</div></button>`).join('');
  h.classList.remove('hidden')}
 function size(){cv.width=cv.parentElement.clientWidth;cv.height=cv.parentElement.clientHeight}
-function open(m){mode=m;const c=M[m],w=m==='words';q('hub').classList.add('hidden');q('game').classList.remove('hidden');
+function open(m){if(m==='race'){q('hub').classList.add('hidden');Race.open();return}mode=m;const c=M[m],w=m==='words';q('hub').classList.add('hidden');q('game').classList.remove('hidden');
  q('g-title').textContent=c.t;inp.placeholder=c.ph;cv.classList.toggle('hidden',!w);q('g-ring').classList.toggle('hidden',w);q('g-miss').classList.toggle('hidden',!w);
  q('g-mt').textContent=c.t;q('g-md').textContent=c.d;q('g-st').classList.add('hidden');q('g-start').textContent='START GAME';q('g-modal').classList.remove('hidden');
  stop();size();cancelAnimationFrame(raf);loop()}
 function back(){stop();cancelAnimationFrame(raf);q('game').classList.add('hidden');hub()}
 function stop(){play=false;clearInterval(sp);clearInterval(tk)}
 function slots(){q('g-mc').textContent=miss.length+' / 4';q('g-slots').innerHTML=[0,1,2,3].map(i=>miss[i]?`<div class="h-9 rounded-lg border border-rose-500/50 bg-rose-500/10 flex items-center justify-center text-xs font-bold text-rose-400 truncate px-1">${miss[i]}</div>`:`<div class="h-9 rounded-lg border border-dashed border-slate-700 flex items-center justify-center text-xs text-slate-600">Empty</div>`).join('')}
-function start(){score=0;miss=[];fall=[];play=true;paused=false;q('g-pause').textContent='PAUSE';inp.value='';inp.focus();q('g-score').textContent=0;q('g-prog').textContent='0%';slots();q('g-modal').classList.add('hidden');
- if(mode==='words'){spawn();clearInterval(sp);sp=setInterval(spawn,2200)}
- else{seq=mode==='upper'?[...U]:mode==='lower'?U.map(c=>c.toLowerCase()):Array.from({length:20},()=>String(1000+Math.random()*9000|0));ri=0;t0=Date.now();ring();clearInterval(tk);tk=setInterval(()=>q('g-time').textContent=((Date.now()-t0)/1000).toFixed(2)+'s',50)}}
-function pause(){if(!play)return;paused=!paused;q('g-pause').textContent=paused?'RESUME':'PAUSE';if(!paused)inp.focus()}
+function start(){score=0;miss=[];fall=[];play=true;paused=false;go=false;q('g-pause').textContent='PAUSE';inp.value='';inp.focus();q('g-score').textContent=0;q('g-prog').textContent='0%';slots();q('g-modal').classList.add('hidden');
+ if(mode==='words'){clearInterval(sp)}
+ else{seq=mode==='upper'?[...U]:mode==='lower'?U.map(c=>c.toLowerCase()):Array.from({length:20},()=>String(1000+Math.random()*9000|0));ri=0;clearInterval(tk);ring();q('g-time').textContent='0.00s';q('g-next').textContent='Press any key to start'}}
+function begin(){if(mode==='words'){spawn();clearInterval(sp);sp=setInterval(spawn,2200)}else{t0=Date.now();clearInterval(tk);tk=setInterval(()=>{if(!paused)q('g-time').textContent=((Date.now()-t0)/1000).toFixed(2)+'s'},50);q('g-next').textContent='Next: '+(seq[ri+1]||'END')}}
+function pause(){if(!play||!go)return;paused=!paused;if(paused)pa=Date.now();else t0+=Date.now()-pa;q('g-pause').textContent=paused?'RESUME':'PAUSE';if(!paused)inp.focus()}
 function spawn(){if(!play||paused||mode!=='words'||fall.length>=3)return;fall.push({text:pick(WL),x:Math.random()*(cv.width-160)+80,y:0,speed:1.2+Math.random()*.8})}
 function ring(){const t=seq[ri];q('g-tc').textContent=t;q('g-tc').style.fontSize=t.length>2?'2.4rem':'';q('g-next').textContent='Next: '+(seq[ri+1]||'END');q('g-bar').style.strokeDashoffset=263.89*(1-ri/seq.length)}
 function result(t,d,l1,v1,l2,v2){q('g-mt').textContent=t;q('g-md').textContent=d;q('g-l1').textContent=l1;q('g-v1').textContent=v1;q('g-l2').textContent=l2;q('g-v2').textContent=v2;q('g-st').classList.remove('hidden');q('g-start').textContent='PLAY AGAIN';q('g-modal').classList.remove('hidden')}
-inp.addEventListener('input',()=>{if(!play||paused)return;playSound('correct');const raw=inp.value.trim(),up=raw.toUpperCase();
+inp.addEventListener('input',()=>{if(!play||paused)return;if(!go){go=true;begin()}playSound('correct');const raw=inp.value.trim(),up=raw.toUpperCase();
  if(mode==='words'){const i=fall.findIndex(w=>w.text===up);if(i>-1){fall.splice(i,1);score+=10;q('g-score').textContent=score;inp.value=''}return}
  const t=seq[ri],ok=mode==='lower'?raw.endsWith(t):up.endsWith(t);
  if(ok){ri++;q('g-prog').textContent=Math.round(ri/seq.length*100)+'%';inp.value='';
-  if(ri>=seq.length){stop();const s=(Date.now()-t0)/1000,w=Math.round(seq.length/5/(s/60));const pts=Math.round(seq.length/s*1000);if(B[mode]==null||pts>B[mode])B[mode]=pts;sv();q('g-bar').style.strokeDashoffset=0;result('CHALLENGE COMPLETE!','Speed: '+w+' WPM. Great job!','TOTAL TIME',s.toFixed(2)+'s','POINTS',pts)}else ring()}});
+  if(ri>=seq.length){stop();const s=(Date.now()-t0)/1000,w=Math.round(seq.length/5/(s/60));const pts=Math.round(seq.length/s*1000);if(B[mode]==null||pts>B[mode])B[mode]=pts;B.w=B.w||{};if(w>(B.w[mode]||0))B.w[mode]=w;sv();q('g-bar').style.strokeDashoffset=0;result('CHALLENGE COMPLETE!','Speed: '+w+' WPM. Great job!','TOTAL TIME',s.toFixed(2)+'s','POINTS',pts)}else ring()}});
 function over(){stop();playSound('error');if(score>(B.words||0)){B.words=score;sv()}result('GAME OVER','4 words hit the missed box! Practice and try again.','SCORE',score,'BEST',B.words||0)}
 function loop(){if(!vis('game'))return;
  if(mode==='words'){cx.clearRect(0,0,cv.width,cv.height);
+  if(play&&!go){cx.fillStyle='#94a3b8';cx.font='22px Orbitron';cx.textAlign='center';cx.fillText('⌨ Press any key to start',cv.width/2,cv.height/2-40)}
   if(play&&!paused){let lo=-1,my=-1;fall.forEach((w,i)=>{if(w.y>my){my=w.y;lo=i}});
    for(let i=fall.length-1;i>=0;i--){const w=fall[i],tg=i===lo;w.y+=w.speed;
     cx.font="18px 'JetBrains Mono',monospace";const tw=cx.measureText(w.text).width,p=12;
@@ -439,21 +490,54 @@ function loop(){if(!vis('game'))return;
  raf=requestAnimationFrame(loop)}
 window.addEventListener('resize',()=>{if(vis('game'))size()});
 function reset(){stop();start()}
-function shut(){stop();cancelAnimationFrame(raf);q('game').classList.add('hidden');q('hub').classList.add('hidden')}
-return{hub,open,back,start,pause,reset,close:shut,sync:o=>{B=o},on:()=>vis('game')||vis('hub')}})();
+function shut(){stop();cancelAnimationFrame(raf);q('game').classList.add('hidden');q('hub').classList.add('hidden');q('race').classList.add('hidden');Race.reset()}
+return{hub,open,back,start,pause,reset,close:shut,sync:o=>{B=o},on:()=>vis('game')||vis('hub')||vis('race')}})();
+
+/* ---------- Nitro Type Racer ---------- */
+const Race=(()=>{
+const q=i=>document.getElementById(i),cu=()=>DB.users.find(u=>u.n===DB.cur);
+const W='speed drive track shift turbo wheel racer motor engine brake power boost nitro steer drift light quick flash hyper super fast road gear race dash zone line apex fuel pace curve glide champ force front grand match pixel pulse reach score solid spark stand start state storm surge swift trail train tread trust turn twist value vivid yield young lane street overtake distance victory win rapid accel pilot clutch'.split(' ');
+const T=300,inp=q('r-in');
+let tl=T,ti=null,di=null,on=false,go=false,pool=[],qu=[],cw='',ty='',tc=0,ta=0,sc=0,sp=0,top=0,wpm=0,acc=100;
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtT=()=>`${String(tl/60|0).padStart(2,'0')}:${String(tl%60).padStart(2,'0')}`;
+(function(){const kb=q('r-kb');['qwertyuiop','asdfghjkl','zxcvbnm'].forEach(r=>{const d=document.createElement('div');d.className='flex gap-1.5';[...r].forEach(c=>{const k=document.createElement('div');k.className='tm-key rk zone-pl w-11 h-10 rounded-lg flex items-center justify-center text-white font-bold';k.dataset.k=c;k.textContent=c.toUpperCase();d.append(k)});kb.append(d)});
+ const s=document.createElement('div');s.className='tm-key rk zone-th w-72 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold';s.dataset.k=' ';s.textContent='SPACE';kb.append(s)})();
+function fill(){if(pool.length<10)pool=shuf(W);while(qu.length<10)qu.push(pool.pop())}
+function draw(){q('r-word').innerHTML=[...cw].map((c,i)=>`<span class="px-0.5 ${i<ty.length?(ty[i]===c?'text-emerald-400':'text-rose-500 underline'):i===ty.length?'text-blue-400 border-b-4 border-blue-400 animate-pulse':'text-gray-400'}">${c}</span>`).join('')}
+function hint(){document.querySelectorAll('#r-kb .rk').forEach(k=>k.classList.remove('key-highlight'));const c=cw[ty.length];if(on&&c){const k=document.querySelector(`#r-kb .rk[data-k="${c}"]`);if(k)k.classList.add('key-highlight')}}
+function next(){if(!qu.length)fill();cw=qu.shift();ty='';inp.value='';fill();draw();q('r-queue').innerHTML=qu.slice(0,6).map(w=>`<span class="opacity-60">${w}</span>`).join('');hint()}
+function stats(){const m=(T-tl)/60;wpm=m>0?Math.round(tc/5/m):0;acc=ta?Math.round(tc/ta*100):100;if(sp>top)top=sp;
+ q('r-time').textContent=fmtT();q('r-spd').textContent=Math.round(sp);q('r-wpm').textContent=wpm;q('r-acc').textContent=acc+'%';q('r-pts').textContent=sc;
+ const l=q('r-line');l.style.animationDuration=Math.max(.1,1.2-sp/200)+'s';l.style.animationPlayState=sp>0&&on?'running':'paused';
+ q('r-car').style.left=Math.min(65,10+sp/3.5)+'%';q('r-fire').classList.toggle('hidden',sp<=60);q('r-lines').style.opacity=sp>60?Math.min(1,(sp-60)/100):0}
+function tick(){clearInterval(ti);clearInterval(di);ti=setInterval(()=>{if(tl>0){tl--;stats()}else end()},1000);di=setInterval(()=>{if(on&&sp>0){sp=Math.max(0,sp-1);stats()}},300)}
+inp.addEventListener('input',()=>{if(!on)return;if(!go){go=true;tick();q('r-hint').textContent='Type the word below'}
+ const v=inp.value.toLowerCase().trim(),pl=ty.length;
+ if(v.length>pl){const n=v.length-pl;ta+=n;if(v[pl]===cw[pl]){tc+=n;playSound('correct');sp=Math.min(220,sp+2)}else{playSound('error');sp=Math.max(0,sp-5)}}
+ ty=v;if(ty===cw){sc+=cw.length*10;sp=Math.min(220,sp+4);next()}else{draw();hint()}stats()});
+function toggle(){if(!on){on=true;inp.disabled=false;inp.focus();q('r-btn').textContent='PAUSE';if(!cw){pool=shuf(W);next()}if(go)tick();hint()}
+ else{on=false;inp.disabled=true;clearInterval(ti);clearInterval(di);q('r-btn').textContent='RESUME';stats();hint()}}
+function end(){on=false;go=false;clearInterval(ti);clearInterval(di);inp.disabled=true;stats();
+ const u=cu();if(u){const a=u.arc;if(sc>(a.race||0))a.race=sc;a.w=a.w||{};if(wpm>(a.w.race||0))a.w.race=wpm;if(Math.round(top)>(a.top||0))a.top=Math.round(top);save()}
+ q('rm-pts').textContent=sc;q('rm-top').textContent=Math.round(top)+' KM/H';q('rm-wpm').textContent=wpm;q('rm-acc').textContent=acc+'%';q('r-modal').classList.remove('hidden')}
+function reset(){on=false;go=false;clearInterval(ti);clearInterval(di);inp.disabled=true;inp.value='';tl=T;sc=sp=top=wpm=tc=ta=0;acc=100;qu=[];cw='';ty='';
+ q('r-word').innerHTML='<span class="text-gray-500 text-2xl">Press START to Begin</span>';q('r-queue').innerHTML='';q('r-btn').textContent='START';q('r-modal').classList.add('hidden');
+ q('r-hint').textContent='Press START, then type the first letter to start the clock';stats();hint()}
+return{toggle,reset,again(){reset();toggle()},open(){q('race').classList.remove('hidden');reset()},back(){reset();q('race').classList.add('hidden');Arc.hub()}}})();
 
 /* ---------- Accounts & Leaderboard (per browser / per PC) ---------- */
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 const LB=(()=>{
-const T=[['all','🏆 Overall'],['words','☄️ Words'],['upper','🔠 A-Z'],['lower','🔡 a-z'],['nums','🔢 0-9'],['wpm','⌨ Typing WPM']];
-const G=['words','upper','lower','nums'];let tab='all';
-const val=(u,k)=>k==='all'?G.reduce((s,g)=>s+(u.arc[g]||0),0):k==='wpm'?(u.prog.t||0):(u.arc[k]||0);
+const T=[['all','🏆 Overall'],['words','☄️ Words'],['upper','🔠 A-Z'],['lower','🔡 a-z'],['nums','🔢 0-9'],['race','🏎 Racer']];
+const G=['words','upper','lower','nums','race'];let tab='all';const spd=(u,k)=>{const w=u.arc.w||{};return k==='all'?Math.max(0,...Object.values(w)):(w[k]||0)};
+const val=(u,k)=>k==='all'?G.reduce((s,g)=>s+(u.arc[g]||0),0):(u.arc[k]||0);
 function render(){
  $('lb-tabs').innerHTML=T.map(([k,l])=>`<button onclick="LB.tab('${k}')" class="${k===tab?'btn':'btn2'} px-3 py-1.5 text-xs">${l}</button>`).join('');
- const r=DB.users.map(u=>({n:u.n,v:val(u,tab)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
- const md=['🥇','🥈','🥉'],un=tab==='wpm'?' WPM':' pts';
- $('lb-rows').innerHTML=r.length?r.map((x,i)=>`<div class="flex items-center gap-3 px-4 py-2.5 rounded-lg border ${x.n===DB.cur?'border-cyan-400 bg-cyan-500/10':'border-slate-700 bg-slate-900/60'}"><span class="w-8 text-lg text-center">${md[i]||i+1}</span><span class="flex-1 font-semibold truncate">${esc(x.n)}${x.n===DB.cur?' <span class="text-[10px] text-cyan-300">(you)</span>':''}</span><span class="font-bold text-amber-300" style="font-family:Orbitron,sans-serif">${x.v}${un}</span></div>`).join(''):'<p class="text-center text-sm text-slate-400 py-6">No scores yet. Play a game to get on the board!</p>'}
-return{tab:k=>{tab=k;render()},open:()=>{render();$('lb-modal').classList.remove('hidden')},close:()=>{$('lb-modal').classList.add('hidden');Arc.on()||focusInput()},on:()=>!$('lb-modal').classList.contains('hidden')}})();
+ const r=DB.users.map(u=>({n:u.n,v:val(u,tab),s:spd(u,tab),t:u.arc.top||0})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+ const md=['🥇','🥈','🥉'],un=' pts';
+ $('lb-rows').innerHTML=r.length?r.map((x,i)=>`<div class="flex items-center gap-3 px-4 py-2.5 rounded-lg border ${x.n===DB.cur?'border-cyan-400 bg-cyan-500/10':'border-slate-700 bg-slate-900/60'}"><span class="w-8 text-lg text-center">${md[i]||i+1}</span><span class="flex-1 font-semibold truncate">${esc(x.n)}${x.n===DB.cur?' <span class="text-[10px] text-cyan-300">(you)</span>':''}</span><span class="text-right"><span class="block font-bold text-amber-300" style="font-family:Orbitron,sans-serif">${x.v}${un}</span>${x.s?`<span class="block text-[11px] text-emerald-400">⚡ ${x.s} WPM${tab==='race'&&x.t?' · 🏎 '+x.t+' KM/H':''}</span>`:''}</span></div>`).join(''):'<p class="text-center text-sm text-slate-400 py-6">No scores yet. Play a game to get on the board!</p>'}
+return{tab:k=>{tab=k;render()},open:()=>{render();clearInterval(timer);started=false;$('typing-input').blur();$('lb-modal').classList.remove('hidden')},close:()=>{$('lb-modal').classList.add('hidden');Arc.on()||focusInput()},on:()=>!$('lb-modal').classList.contains('hidden')}})();
 const Acc=(()=>{let del=-1;const m=()=>$('acc-modal');
 function render(){const n=DB.users.map(u=>u.n);$('acc-list').innerHTML=n.length?n.map((u,i)=>del===i?`<div class="flex items-center justify-between bg-rose-950/60 border border-rose-500/50 rounded-lg px-4 py-2 text-sm"><span>Delete <b>${esc(u)}</b>?</span><span class="flex gap-2"><button onclick="Acc.rm(${i})" class="btn px-3 py-1 text-xs">Yes</button><button onclick="Acc.ask(-1)" class="btn2 px-3 py-1 text-xs">No</button></span></div>`:`<div class="flex gap-2"><button onclick="Acc.login(${i})" class="btn2 flex-1 text-left px-4 py-2.5 text-sm font-semibold">👤 ${esc(u)}</button><button onclick="Acc.ask(${i})" title="Remove this account" class="btn2 px-3 text-rose-400">✕</button></div>`).join(''):'<p class="text-center text-xs text-slate-400 py-2">No accounts on this PC yet. Create the first one below.</p>';$('acc-err').textContent=''}
 function login(i){const u=DB.users[i];if(!u)return;DB.cur=u.n;save();P=u.prog;Arc.sync(u.arc);userName=u.n;$('user-display-name').textContent='👤 '+u.n;m().classList.add('hidden');closeResultModal();resetLesson()}
