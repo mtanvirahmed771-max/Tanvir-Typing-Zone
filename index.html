@@ -106,6 +106,7 @@ svg.opacity-70{opacity:.9;fill:#cbd5e1;filter:drop-shadow(0 0 10px rgba(125,211,
    <button onclick="LB.open()" class="btn2 px-2 py-0.5 font-semibold">🏆 Leaderboard</button>
    <button onclick="toggleMenu()" class="btn2 px-2 py-0.5 font-semibold">☰ Lessons</button>
    <span id="user-display-name" class="text-cyan-300 font-semibold hidden sm:inline">👤 Guest</span>
+   <button onclick="toggleFS()" class="fs-btn btn2 px-2 py-0.5 font-semibold">⛶ Fullscreen</button>
    <button onclick="Acc.logout()" class="btn2 px-2 py-0.5 font-semibold">Logout</button>
    <button onclick="toggleSound()" title="Toggle Sound" id="sound-icon" class="text-sm">🔊</button>
    <div class="w-4 h-4 bg-red-600 hover:bg-red-500 rounded text-white flex items-center justify-center font-bold text-[10px] cursor-pointer" onclick="location.reload()">✕</div>
@@ -189,7 +190,7 @@ svg.opacity-70{opacity:.9;fill:#cbd5e1;filter:drop-shadow(0 0 10px rgba(125,211,
  <header class="px-6 py-3 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
   <button onclick="Race.back()" class="btn2 px-3 py-1.5 text-xs font-semibold">← Games</button>
   <h2 class="golden-text font-bold" style="font-family:Orbitron,sans-serif">🏎 NITRO TYPE RACER</h2>
-  <div class="flex gap-2"><button id="r-btn" onclick="Race.toggle()" class="btn px-5 py-1.5 text-xs">START</button><button onclick="Race.reset()" class="btn2 px-4 py-1.5 text-xs">↻ RESET</button></div>
+  <div class="flex gap-2"><button onclick="toggleFS()" class="fs-btn btn2 px-3 py-1.5 text-xs">⛶ Fullscreen</button><button id="r-btn" onclick="Race.toggle()" class="btn px-5 py-1.5 text-xs">START</button><button onclick="Race.reset()" class="btn2 px-4 py-1.5 text-xs">↻ RESET</button></div>
  </header>
  <main class="flex-1 max-w-5xl w-full mx-auto p-5 flex flex-col gap-4">
   <div class="grid grid-cols-5 gap-3 text-center" style="font-family:Orbitron,sans-serif">
@@ -247,6 +248,7 @@ svg.opacity-70{opacity:.9;fill:#cbd5e1;filter:drop-shadow(0 0 10px rgba(125,211,
   <div class="flex items-center gap-6 text-xs" style="font-family:Orbitron,sans-serif">
    <div class="text-center"><span class="block text-slate-400 text-[10px]">SCORE</span><span id="g-score" class="text-cyan-400 font-bold text-base">0</span></div>
    <div class="text-center"><span class="block text-slate-400 text-[10px]">PROGRESS</span><span id="g-prog" class="text-pink-400 font-bold text-base">0%</span></div>
+   <button onclick="toggleFS()" class="fs-btn btn2 px-3 py-1 text-xs font-semibold">⛶ Fullscreen</button>
    <button onclick="toggleSound();this.textContent=sound?'🔊':'🔇'" class="text-lg">🔊</button>
   </div>
  </header>
@@ -492,6 +494,11 @@ window.addEventListener('resize',()=>{if(vis('game'))size()});
 function reset(){stop();start()}
 function shut(){stop();cancelAnimationFrame(raf);q('game').classList.add('hidden');q('hub').classList.add('hidden');q('race').classList.add('hidden');Race.reset()}
 return{hub,open,back,start,pause,reset,close:shut,sync:o=>{B=o},on:()=>vis('game')||vis('hub')||vis('race')}})();
+
+/* ---------- Fullscreen ---------- */
+function toggleFS(){const d=document;if(!d.fullscreenElement){const p=d.documentElement.requestFullscreen?d.documentElement.requestFullscreen():Promise.reject();p.catch(()=>{document.querySelectorAll('.fs-btn').forEach(b=>{b.textContent='Press F11';setTimeout(fsLabel,2000)})})}else d.exitFullscreen()}
+function fsLabel(){const f=!!document.fullscreenElement;document.querySelectorAll('.fs-btn').forEach(b=>b.textContent=f?'✕ Exit Fullscreen (Esc)':'⛶ Fullscreen')}
+document.addEventListener('fullscreenchange',()=>{fsLabel();if(!(Arc.on()||Acc.open()||LB.on()))focusInput()});
 
 /* ---------- Nitro Type Racer ---------- */
 const Race=(()=>{
